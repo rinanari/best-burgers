@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Categories from '../components/Categories';
 import Sort from '../components/Sort';
 import ItemBlock from '../components/ItemBlock';
@@ -6,33 +6,32 @@ import Skeleton from '../components/ItemBlock/Skeleton';
 import Slider from '../components/Slider';
 import { useSelector, useDispatch } from 'react-redux/es/exports';
 import { setCategoryId } from '../redux/slices/filterSlice';
-import axios from 'axios';
+import { fetchItems } from '../redux/slices/itemSlice';
 
 export default function Home() {
-  let [items, setItems] = useState([]);
-  let [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
+  const { items, status } = useSelector((state) => state.item);
 
-  const { categoryId, sort } = useSelector((state) => state.filter);
-  // const sort = useSelector((state) => state.filter.sort);
-  const sortType = sort.sortProperty;
-
-  useEffect(() => {
-    setLoading(true);
+  const getItems = async () => {
     const order = sortType.includes('-') ? 'desc' : 'asc';
     const sortBy = sortType.replace('-', '');
     const category = categoryId > 0 ? `category=${categoryId}` : '';
 
-    axios
-      .get(
-        `https://630600ae697408f7edd06da7.mockapi.io/items?${category}&sortBy=${sortBy}&order=${order}`,
-      )
+    dispatch(
+      fetchItems({
+        order,
+        sortBy,
+        category,
+      }),
+    );
+  };
 
-      .then((res) => {
-        setItems(res.data);
-        setLoading(false);
-      });
-    // window.scrollTo(0, 0);
+  const { categoryId, sort } = useSelector((state) => state.filter);
+
+  const sortType = sort.sortProperty;
+
+  useEffect(() => {
+    getItems();
   }, [categoryId, sortType]);
 
   const onClickCategory = (id) => {
@@ -47,7 +46,13 @@ export default function Home() {
       </div>
       <h2 className="content__title">Все </h2>
       <div className="content__items">
-        {loading
+        {status === 'error' && (
+          <div className="content__error-info">
+            <h2>Что-то пошло не так</h2>
+            <p>Не удалось вывести товары. Попробуйте повторить попытку чуть позже</p>
+          </div>
+        )}
+        {status === 'loading'
           ? [...new Array(6)].map((_, index) => <Skeleton key={index} />)
           : items.map((obj) => <ItemBlock key={obj.id} {...obj} />)}
       </div>

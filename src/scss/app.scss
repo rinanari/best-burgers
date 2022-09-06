@@ -11,6 +11,14 @@
 
 .content {
   padding: 0 40px;
+  &__error-info {
+    margin: 60px auto;
+    width: 580px;
+    text-align: center;
+    h2 {
+      font-size: 32px;
+    }
+  }
   &__title {
     margin: 35px 0;
   }

@@ -6,8 +6,7 @@ export let sortList = [
   { name: 'популярности', sortProperty: '-rating' },
   { name: 'возрастанию цены', sortProperty: 'price' },
   { name: 'убыванию цены', sortProperty: '-price' },
-  { name: 'алфавиту asc', sortProperty: 'title' },
-  { name: 'алфавиту desc', sortProperty: '-title' },
+  { name: 'алфавиту', sortProperty: 'title' },
 ];
 
 export default function Sort() {
